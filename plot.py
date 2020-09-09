@@ -1,9 +1,6 @@
 #!/usr/bin/python
 
 import sys
-sys.path.append("graphem/lots_plots/lib")
-sys.path.append("/home/christian/bin")
-
 import lots_plots as lp 
 g = lp.lots_plots()
 
@@ -23,7 +20,7 @@ def plotBwByTime():
     using (time)
     """
 
-    g.default_terminal = """pdf noenhanced font ',14' size 8,2"""
+    g.default_terminal = """pdf noenhanced font ',14' size 8,4"""
     g.graphs((db, query),
         graph_attr="""set key top right outside title 'Channel' samplen 3
         set ylabel offset 1,0,0
