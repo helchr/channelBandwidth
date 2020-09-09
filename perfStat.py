@@ -21,22 +21,21 @@ def addBandwidth():
         access=row[2]
         time=float(row[3])
         data=float(row[4])
-        print(socket,channel,time,data)
         deltaTime = time
-        lastTime = {}
         if socket in lastTime:
             if channel in lastTime[socket]:
                 if access in lastTime[socket][channel]:
-                    deltaTime = time-lastTime[socket][channel][access]
+                    deltaTime = time - lastTime[socket][channel][access]
+                    lastTime[socket][channel][access] = time
                 else:
-                    lastTime[socket][channel][access] = time;
+                    lastTime[socket][channel][access] = 0;
             else:
                 lastTime[socket][channel] = {}
-                lastTime[socket][channel][access] = time;
+                lastTime[socket][channel][access] = 0;
         else:
             lastTime[socket] = {}
             lastTime[socket][channel] = {}
-            lastTime[socket][channel][access] = time;
+            lastTime[socket][channel][access] = 0;
         bw = data/deltaTime
         cur.execute(update,(bw,socket,channel,access,time))
     con.commit()
@@ -66,8 +65,8 @@ perfOptions =  " stat --no-big-num --per-socket -I 500 -x , -o %s -e %s %s" % (o
 
 subprocess.call(perf + perfOptions,shell=True)
 
-txt2sql="""
-graphem/a2sql/bin/txt2sql "%s" --table imc \
+txt2sqlExe = os.path.dirname(os.path.abspath(__file__)) + "/graphem/a2sql/bin/txt2sql"
+txt2sql= txt2sqlExe + """ "%s" --table imc \
 --row '(?P<time>\d+\.\d+),S(?P<socket>\d),1,(?P<size>\d+\.\d+),MiB,uncore_imc_(?P<channel>\d)\/cas_count_(?P<access>read|write)' \
     "%s"
     """ % (output,outputTemp)
